@@ -1,29 +1,14 @@
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score
+import pandas as pd
+from sklearn.linear_model import LogisticRegression
 import joblib
-from data_preprocessing import load_and_preprocess_data
 
-def train_model(filepath):
-    # Load and preprocess the data
-    X_train, X_test, y_train, y_test = load_and_preprocess_data(filepath)
-    
-    # Initialize the classifier
-    model = RandomForestClassifier(n_estimators=100, random_state=42)
-    
-    # Train the model
-    model.fit(X_train, y_train)
-    
-    # Predictions on the test set
-    y_pred = model.predict(X_test)
-    
-    # Evaluate the model
-    accuracy = accuracy_score(y_test, y_pred)
-    print(f'Model Accuracy: {accuracy * 100:.2f}%')
-    
-    # Save the model for future use
-    joblib.dump(model, '../models/saved_model.pkl')
-    
-    return model
+# Load preprocessed data
+X_train_scaled = pd.read_csv('../data/X_train_scaled.csv')
+y_train = pd.read_csv('../data/y_train.csv')
 
-if __name__ == "__main__":
-    model = train_model('../data/h1n1_vaccine_prediction.csv')
+# Logistic Regression Model Training
+model = LogisticRegression(random_state=42, max_iter=1000)
+model.fit(X_train_scaled, y_train.values.ravel())  # Use ravel to convert y_train to 1D array
+
+# Save the trained model
+joblib.dump(model, '../models/saved_model.pkl')
